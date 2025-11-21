@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { Send, FileText, Handshake, CreditCard, Truck, Server, Cpu, Wallet } from 'lucide-react'
 
 const stages = [
@@ -19,12 +19,18 @@ export default function FlowJourney() {
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 120, damping: 20, mass: 0.2 })
   const [active, setActive] = useState(0)
 
+  // Derived positions using useTransform (instead of .to which doesn't exist on MotionValue)
+  const horizontalLeft = useTransform(smoothProgress, (v) => `${v * 100}%`)
+  const verticalTop = useTransform(smoothProgress, (v) => `${v * 100}%`)
+
   useEffect(() => {
     const unsub = smoothProgress.on('change', (v) => {
       const idx = Math.min(stages.length - 1, Math.max(0, Math.round(v * (stages.length - 1))))
       setActive(idx)
     })
-    return () => unsub()
+    return () => {
+      if (typeof unsub === 'function') unsub()
+    }
   }, [])
 
   return (
@@ -44,7 +50,7 @@ export default function FlowJourney() {
         <div className="hidden md:block relative">
           <div className="relative h-36">
             <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-white/10" />
-            <motion.div className="absolute top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-white shadow-[0_0_20px_4px_rgba(255,255,255,0.25)]" style={{ left: smoothProgress.to(v => `${v * 100}%`) }} />
+            <motion.div className="absolute top-1/2 -translate-y-1/2 h-3 w-3 rounded-full bg-white shadow-[0_0_20px_4px_rgba(255,255,255,0.25)]" style={{ left: horizontalLeft }} />
 
             <div className="absolute inset-x-0 -translate-y-1/2 top-1/2 grid" style={{ gridTemplateColumns: `repeat(${stages.length}, minmax(0,1fr))` }}>
               {stages.map((s, i) => (
@@ -68,7 +74,7 @@ export default function FlowJourney() {
         {/* Mobile vertical timeline */}
         <div className="md:hidden relative mt-4">
           <div className="absolute left-6 top-0 bottom-0 w-[2px] bg-white/10" />
-          <motion.div className="absolute left-[22px] h-3 w-3 rounded-full bg-white" style={{ top: smoothProgress.to(v => `${v * 100}%`) }} />
+          <motion.div className="absolute left-[22px] h-3 w-3 rounded-full bg-white" style={{ top: verticalTop }} />
           <div className="space-y-8">
             {stages.map((s, i) => (
               <div key={s.key} className="pl-12 relative">
