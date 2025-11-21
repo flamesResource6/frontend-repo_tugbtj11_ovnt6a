@@ -1,5 +1,8 @@
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
+import FlowJourney from './components/FlowJourney'
+import Flow3D from './components/Flow3D'
+import LogisticsMap from './components/LogisticsMap'
 import Features from './components/Features'
 import ROISection from './components/ROISection'
 import WhyUSA from './components/WhyUSA'
@@ -11,6 +14,11 @@ function App() {
       <Navbar />
       <main>
         <Hero />
+        {/* Animation test sections */}
+        <FlowJourney />
+        <Flow3D />
+        <LogisticsMap />
+        {/* Existing content */}
         <Features />
         <ROISection />
         <WhyUSA />
